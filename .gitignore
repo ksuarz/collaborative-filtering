@@ -1,0 +1,13 @@
+# Swap and temporary files
+*.sw[po]
+*~
+
+# Compiled files
+*.class
+
+# Miscellaneous Java things
+.classpath
+.project
+
+# Don't include the data set
+data/

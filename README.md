@@ -22,7 +22,8 @@ assignment.
 
 Programming
 -----------
-There is only one method to fill in, and that is the `predict` function:
+There is only one method to fill in, and that is the `predict` function, found
+in `RatingDictionary.java`:
 
     public Rating predict(String rater, String item, Method method,
                           int numItemNeighbors, int numRaterNeighbors) {
