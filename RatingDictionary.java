@@ -456,36 +456,75 @@ public class RatingDictionary {
      */
     public Rating predict(String rater, String item, Method method, 
 			  int numItemNeighbors, int numRaterNeighbors) {
+        double norm = 0.0, rating = 0.0;
 
-        double score = 0;
-        double norm = 0;
-        int ct = 0;
-        
         if (method == Method.ITEM_BASELINE) {
-            // TBC: Your code here.
+            // Guess that a new rating for an item will be about equal to the
+            // average rating that that item has received in the past
+            rating = itemData.get(item).getAverage();
         }
         
-        if (method == Method.RATER_BASELINE) {
-            // TBC: Your code here.
+        else if (method == Method.RATER_BASELINE) {
+            // Guess that a new rating for an item will be about equal to the
+            // average rating that the user you're looking at has given in the
+            // past
+            rating = raterData.get(rater).getAverage();
+        }
+        else if (method == Method.MIXED_BASELINE) {
+            // Guess that the new rating is a weighted average of the item
+            // baseline and rater baseline
+            rating = geometricMeanBaseline(rater, item);
+        }
+        else if (method == Method.ITEM_SIMILARITY) {
+            // The new rating is some sort of weighted average of the ratings of
+            // other similar items
+            ArrayList<SimilarityTable.Similarity> similarities = itemNeighbors.get(item).similarities;
+            if (similarities.isEmpty()) {
+                // No similar entities... default to item baseline
+                rating = itemData.get(item).getAverage();
+            }
+            else {
+                // TODO what do we default to if there are not enough neighbors
+                // (here we just stop)
+                int count = 0;
+                for (int k = 0;
+                         k < Math.min(numItemNeighbors, similarities.size());
+                         k++, count++) {
+                    SimilarityTable.Similarity s = similarities.get(k);
+                    norm += s.value * s.predict(itemData.get(s.key).getAverage());
+                }
+                rating = norm;
+            }
+        }
+        else if (method == Method.RATER_SIMILARITY) {
+            // The new rating is a weighted average of the ratings of other
+            // similar users
+            ArrayList<SimilarityTable.Similarity> similarities = raterNeighbors.get(rater).similarities;
+            if (similarities.isEmpty()) {
+                // No similar entities... default to rater baseline
+                rating = raterData.get(rater).getAverage();
+            }
+            else {
+                // TODO what do we default to if there are not enough neighbors
+                // (here we just stop)
+                int count = 0;
+                for (int k = 0;
+                         k < Math.min(numRaterNeighbors, similarities.size());
+                         k++, count++) {
+                    SimilarityTable.Similarity s = similarities.get(k);
+                    norm += s.value * s.predict(raterData.get(s.key).getAverage());
+                }
+                rating = norm;
+            }
+        }
+        else if (method == Method.CUSTOM) {
+            // TODO: Your code here.
+        }
+        else {
+            rating = this.defaultScore();
         }
 
-        if (method == Method.MIXED_BASELINE) {
-            // TBC: Your code here.
-        }
-
-        if (method == Method.ITEM_SIMILARITY) {
-            // TBC: Your code here.
-        }
-
-        if (method == Method.RATER_SIMILARITY) {
-            // TBC: Your code here.
-        }
-
-        if (method == Method.CUSTOM) {
-            // TBC: Your code here.
-        }
-
-        return new Rating(rater, item, this.defaultScore());
+        return new Rating(rater, item, rating);
     }
 
     ////////////////////////////////////////////////////////////////

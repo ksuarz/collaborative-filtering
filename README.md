@@ -40,3 +40,65 @@ Extra Credit
 ------------
 Combine both user-based filtering and item-based filtering together to get even
 more accurate results.
+
+Baselines
+---------
+The idea of a baseline is important in machine learning (or in any other
+engineering discipline where you might not be certain that a change that you
+have made would lead to an improvement). A baseline is a simple algorithm whose
+performance you understand analytically and whose results you can compare to a
+more sophisticated method whose behavior is more complicated. A baseline is a
+way to gauge whether you have made an improvement and, sometimes more
+importantly, whether you have done the right experiments and made the right
+measurements so that you could recognize any possible improvement if it realy
+was present.
+
+So, each of the baselines is a simple rule that says how to predict a new
+rating based on ratings that you have in your collection.
+
+- The ITEM_BASELINE says: guess that a new rating for an item will be about
+  equal to the average rating that that item has received in the past.
+
+- The RATER_BASELINE says: guess that a new rating for an item will be about
+  equal to the average rating that the user you're looking at has given in the
+  past.
+
+- The MIXED_BASELINE says: make a good guess about what rating you'd expect the
+  item to receive and what rating you'd expect the rater to give, and split the
+  difference between them.
+
+You can implement each of these in just a few lines of code. You just need to
+understand how the RatingDictionary object stores ratings by item and by rater
+in hash tables called itemData and raterData; this allows you to look up
+ratings information of either type by name (e.g., itemData.get(movieName) or
+raterData.get(raterName)). These functions return objects of type RatingTable
+which have a variety of methods defined, including a method getAverage() which
+returns the average rating in the table.
+
+The RatingDictionary itself already has a method called
+geometricMeanBaseline(rater, item) that provides a good mixed baseline. I have
+provided this for you because it is an open-ended problem (that I actually got
+badly wrong a few times along the way). The trick is that you not only need to
+figure out how to balance the weights for rater and item together in a sensible
+way, but then you have to figure out how to set the weights (so balanced) so
+that they actually match your training data. (You can maybe convince yourself
+that unless you're very careful, when you predict new data based on combining
+old averages, the averages from the predictions might not match those averages
+you started from. For those of you who are interested, you can trace through
+the assignment and see how the weights and estimation works - the programs for
+creating new test data, which I will describe later, also show how I eventually
+managed to debug the method I chose.)
+
+The baselines are actually the most important ingredient in building and
+understanding a recommendation system -- something that we have really only
+properly come to understand and appreciate in the last few years (since the
+last round of the Netflix prize competition). In this assignment, you have to
+work carefully to beat the mixed baseline.
+
+Samples
+-------
+### Sample.data
+- 1000 ratings
+- Estimated item baseline RMSE: 0.89275853
+- Estimated rater baseline RMSE: 1.143639650
+- Estimated mixed baseline RMSE: 0.958249
