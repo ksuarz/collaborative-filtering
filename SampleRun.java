@@ -22,7 +22,7 @@ public class SampleRun {
      * similarity (and then add back in the baseline
      * after making predictions)?
      */
-    static boolean predictAgainstBaseline = false;
+    static boolean predictAgainstBaseline = true;
 
     /** How to calculate similarities between items */
     static RatingTable.SimilarityMeasure itemSimilarityMeasure =
@@ -63,7 +63,7 @@ public class SampleRun {
         RatingDictionary.Method.ITEM_SIMILARITY;
     
     /** Whether to display each prediction made */
-    static boolean printPredictions = false;
+    static boolean printPredictions = true;
     
     /**
      * Main method

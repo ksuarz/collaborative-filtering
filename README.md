@@ -98,7 +98,18 @@ work carefully to beat the mixed baseline.
 Samples
 -------
 ### Sample.data
+Contains data that makes the baselines perform poorly; the similarity
+measures should achieve good ratings fairly quickly.
+
 - 1000 ratings
 - Estimated item baseline RMSE: 0.89275853
 - Estimated rater baseline RMSE: 1.143639650
 - Estimated mixed baseline RMSE: 0.958249
+
+### Sample2.data
+Given enough noise, the similarity measures will struggle to perform well.
+
+- 1000 ratings for file Sample2.data
+- Estimated rater baseline RMSE: 1.1907518231273422
+- Estimated item baseline RMSE: 1.1169338056511784
+- Estimated mixed baseline RMSE: 1.0

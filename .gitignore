@@ -8,6 +8,8 @@
 # Miscellaneous Java things
 .classpath
 .project
+workbench*
 
-# Don't include the data set
+# Don't include the data set or our tests
 data/
+test*
