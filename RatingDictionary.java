@@ -519,6 +519,7 @@ public class RatingDictionary {
         }
         else if (method == Method.CUSTOM) {
             // TODO: Your code here.
+            rating = this.defaultScore();
         }
         else {
             rating = this.defaultScore();

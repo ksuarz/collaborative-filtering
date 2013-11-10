@@ -36,13 +36,13 @@ public class SampleRun {
      * How many ratings must two item records have in common
      * before we are willing to treat them as similar
      */
-    static int minItemOverlapForSimilarity = 5;
+    static int minItemOverlapForSimilarity = 10;
 
     /** 
      * How many ratings must two rater records have in common
      * before we are willing to treat them as similar
      */
-    static int minRaterOverlapForSimilarity = 5;
+    static int minRaterOverlapForSimilarity = 10;
     
     /**
      * What is the maximum number of neighbors to consider
@@ -53,17 +53,17 @@ public class SampleRun {
     static int maxNeighbors = 100;
     
     /** How many neighbors should be considered in making predictions */
-    static int numItemNeighbors = 3;
+    static int numItemNeighbors = 5;
 
     /** How many neighbors should be considered in making predictions */
-    static int numRaterNeighbors = 3;
+    static int numRaterNeighbors = 5;
     
     /** What method should be used for making predictions */
     static RatingDictionary.Method predictionMethod =
         RatingDictionary.Method.ITEM_SIMILARITY;
     
     /** Whether to display each prediction made */
-    static boolean printPredictions = true;
+    static boolean printPredictions = false;
     
     /**
      * Main method
