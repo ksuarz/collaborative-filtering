@@ -1,0 +1,111 @@
+Analysis
+--------
+Intro to AI: Collaborative Filtering
+
+Selecting Parameters
+--------------------
+For the cross-validation parameters, I kept it at 10 cross folds and used the
+first fold as my test set (this leads to a test set of size 10.000). I
+considered playing around with the size of the learning set, but I wanted to
+stay as pragmatic as possible, using as little start data as possible without
+losing accuracy. For randomly generated data sets of size 1000, the RMSE
+increased about a tenth of a point to 1.1-1.2, but in a scale from 1 to 5,
+every fraction counts. I figured 10.000 would be a reasonable size in the real
+world; perhaps even better computers can start with a bigger test set.
+
+When considering the maximum number of neighbors for an item, I did some
+research online of what other AI researchers have done when doing collaborative
+filtering on this data set. One reported that storing only 50 similar items led
+to problems with sparsity - there weren't enough similar movies that each user
+had already rated. Thus I bumped up the maximum neighbors for each record to
+120 to try and find a reasonable compromise between efficiency and getting
+decent accuracy.
+
+For calculating similarities, the Euclidean distance is a pretty good way to
+measure similarity (although it is not that great for large dimensional spaces
+due to lack of data). The Pearson score, however, is better in times when data
+is not well normalized. Thus I use the simple Euclidean distance for the item
+similarity and use the Pearson similarity score for user similarity, as some
+users can be harsher or easier on average when it comes to rating movies.
+
+For my custom method, I take a weighted average between the item-based score
+and the user-based score. I played around with the weighting factor between the
+two, where the rater similarity is weighted by `factor` and the item similarity
+by `1-factor`:
+
+    factor  RMSE
+    --------------
+    0.95    0.9699
+    0.85    0.9705
+    0.7     0.9718
+    0.65    0.9724
+    0.5     0.9745
+    0.25    0.9791
+
+Clearly, the rater-based prediction is better than the item-based one - at
+least for these parameters.
+
+There are 943 users and 1682 items. Now I began playing with the parameters for
+the nearest-neighbor algorithm - specifically, adjusting the minimum number of
+overlapping records required for similarity and the actual `k` value used for
+the k-nearest-neighbor algorithm. To play around I used an average of the
+rater-based and item-based rankings:
+
+    overlap(i)  overlap(n)  k(items)    k(raters)   RMSE
+    ------------------------------------------------------
+    10          5           5           5           0.9934
+    12          7           5           5           0.9794
+    12          7           10          5           0.9725
+    12          7           8           4           0.9740
+    13          7           6           3           0.9810
+    15          8           7           4           0.9703
+    15          8           12          4           0.9704
+    10          5           3           2           1.0429
+    12          8           3           7           0.9642
+    12          10          5           7           0.9622
+
+The pattern seems uncontrolled and unscientific but I just tried using my own
+intuition to see where the parameters would take me. Since the last row seemed
+as good as I would get for now, I decided to settle on the last set of
+parameters:
+
+    itemSimilarityMeasure = EUCLIDEAN
+    raterSimilarityMeasure = PEARSON
+    maxNeighbors = 120
+    minItemOverlapForSimilarity = 12
+    minRaterOverlapForSimilarity = 10
+    numItemNeighbors = 5
+    numRaterNeighbors = 7
+
+Selecting the Best Method
+-------------------------
+After doing some research online, one team of researchers have preferred
+item-based collaborative filtering over user-based because of practical
+reasons: item similarities can be computed beforehand, but user similarities
+must be recalculated constantly to get the latest information. Since we're
+constantly re-running the tests, I can accept the overhead for calculating the
+similarities. Here are the results using my parameters for all the methods:
+
+    method              RMSE
+    --------------------------
+    item baseline       0.9738
+    rater baseline      0.9536
+    mixed baseline      0.9967
+    item similarity     0.9794
+    rater similarity    0.9622
+    custom              0.9719
+
+According to these results, I have to disagree with the results of the other
+research team and conclude that user-based collaborative filtering works better
+in this situation. Both my custom weighted average of similarities and the
+mixed baseline performed worse than the rater-based similarity and rater
+baseline, respectively. It looks like, at least for this data set, that the
+similarity of users is a better indicator of the rating; similar items are not
+as good (in this case, worse).
+
+Obviously my conclusion is not very solidly backed; this is the
+cross-validation results for folds 1-9 but may be different by using a
+different learnset. If we had a supercomputer to calculate these ratings
+quickly, we could try some brute-force multidimensional parameter analysis to
+find much better parameters for the similarity rankings and increase our
+confidence in the result.

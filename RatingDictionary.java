@@ -478,54 +478,76 @@ public class RatingDictionary {
         else if (method == Method.ITEM_SIMILARITY) {
             // The new rating is some sort of weighted average of the ratings of
             // other similar items
-            ArrayList<SimilarityTable.Similarity> similarities = itemNeighbors.get(item).similarities;
-            if (similarities.isEmpty()) {
-                // No similar entities... default to item baseline
-                rating = itemData.get(item).getAverage();
-            }
-            else {
-                // TODO what do we default to if there are not enough neighbors
-                // (here we just stop)
-                int count = 0;
-                for (int k = 0;
-                         k < Math.min(numItemNeighbors, similarities.size());
-                         k++, count++) {
-                    SimilarityTable.Similarity s = similarities.get(k);
-                    norm += s.value * s.predict(itemData.get(s.key).getAverage());
-                }
-                rating = norm;
-            }
+            rating = itemSimilarity(item, numItemNeighbors);
         }
         else if (method == Method.RATER_SIMILARITY) {
             // The new rating is a weighted average of the ratings of other
             // similar users
-            ArrayList<SimilarityTable.Similarity> similarities = raterNeighbors.get(rater).similarities;
-            if (similarities.isEmpty()) {
-                // No similar entities... default to rater baseline
-                rating = raterData.get(rater).getAverage();
-            }
-            else {
-                // TODO what do we default to if there are not enough neighbors
-                // (here we just stop)
-                int count = 0;
-                for (int k = 0;
-                         k < Math.min(numRaterNeighbors, similarities.size());
-                         k++, count++) {
-                    SimilarityTable.Similarity s = similarities.get(k);
-                    norm += s.value * s.predict(raterData.get(s.key).getAverage());
-                }
-                rating = norm;
-            }
+            rating = raterSimilarity(rater, numRaterNeighbors);
         }
         else if (method == Method.CUSTOM) {
-            // TODO: Your code here.
-            rating = this.defaultScore();
+            // Take a weighted average of the item similarity and rater
+            // similarity methods
+            double factor = 0.95;
+            rating = ((factor * raterSimilarity(rater, numRaterNeighbors)) +
+                     ((1.0 - factor) * itemSimilarity(item, numItemNeighbors)))
+                        / 2.0;
         }
         else {
             rating = this.defaultScore();
         }
 
         return new Rating(rater, item, rating);
+    }
+
+    /**
+     * Calculates a rating based on similar raters to the given target.
+     * @param rater The rater whose score we're predicting
+     * @param numRaterNeighbors The number of nearest-neighbors to consier
+     */
+    public double itemSimilarity(String item, int numItemNeighbors) {
+        ArrayList<SimilarityTable.Similarity> similarities = itemNeighbors.get(item).similarities;
+        double norm = 0.0;
+
+        if (similarities.isEmpty()) {
+            // No similar entities... default to item baseline
+            return itemData.get(item).getAverage();
+        }
+        else {
+            int count = 0;
+            for (int k = 0;
+                     k < Math.min(numItemNeighbors, similarities.size());
+                     k++, count++) {
+                SimilarityTable.Similarity s = similarities.get(k);
+                norm += s.value * s.predict(itemData.get(s.key).getAverage());
+            }
+            return norm / count;
+        }
+    }
+
+    /**
+     * Calculates a rating based on similar raters to the given target.
+     * @param rater The rater whose score we're predicting
+     * @param numRaterNeighbors The number of nearest-neighbors to consier
+     */
+    public double raterSimilarity(String rater, int numRaterNeighbors) {
+        ArrayList<SimilarityTable.Similarity> similarities = raterNeighbors.get(rater).similarities;
+        double norm = 0.0;
+
+        if (similarities.isEmpty()) {
+            // No similar entities... default to rater baseline
+            return raterData.get(rater).getAverage();
+        }
+        else {
+            int count = 0;
+            for (int k = 0;
+                     k < Math.min(numRaterNeighbors, similarities.size());
+                     k++, count++) {
+                SimilarityTable.Similarity s = similarities.get(k);
+                norm += s.value * s.predict(raterData.get(s.key).getAverage());
+            }
+            return norm / count;
+        }
     }
 
     ////////////////////////////////////////////////////////////////

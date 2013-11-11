@@ -26,9 +26,9 @@ public class SampleRun {
 
     /** How to calculate similarities between items */
     static RatingTable.SimilarityMeasure itemSimilarityMeasure =
-        RatingTable.SimilarityMeasure.PEARSON;
+        RatingTable.SimilarityMeasure.EUCLIDEAN;
 
-    /** How to calculate similarities between items */
+    /** How to calculate similarities between raters */
     static RatingTable.SimilarityMeasure raterSimilarityMeasure =
         RatingTable.SimilarityMeasure.PEARSON;
     
@@ -36,7 +36,7 @@ public class SampleRun {
      * How many ratings must two item records have in common
      * before we are willing to treat them as similar
      */
-    static int minItemOverlapForSimilarity = 10;
+    static int minItemOverlapForSimilarity = 12;
 
     /** 
      * How many ratings must two rater records have in common
@@ -50,17 +50,17 @@ public class SampleRun {
      * Determines the overall memory requirements for the
      * program so be careful about setting this too big.
      */
-    static int maxNeighbors = 100;
+    static int maxNeighbors = 120;
     
     /** How many neighbors should be considered in making predictions */
     static int numItemNeighbors = 5;
 
     /** How many neighbors should be considered in making predictions */
-    static int numRaterNeighbors = 5;
+    static int numRaterNeighbors = 7;
     
     /** What method should be used for making predictions */
     static RatingDictionary.Method predictionMethod =
-        RatingDictionary.Method.ITEM_SIMILARITY;
+        RatingDictionary.Method.MIXED_BASELINE;
     
     /** Whether to display each prediction made */
     static boolean printPredictions = false;
