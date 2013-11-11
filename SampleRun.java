@@ -60,7 +60,7 @@ public class SampleRun {
     
     /** What method should be used for making predictions */
     static RatingDictionary.Method predictionMethod =
-        RatingDictionary.Method.MIXED_BASELINE;
+        RatingDictionary.Method.RATER_SIMILARITY;
     
     /** Whether to display each prediction made */
     static boolean printPredictions = false;

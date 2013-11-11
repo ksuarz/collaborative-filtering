@@ -86,26 +86,27 @@ must be recalculated constantly to get the latest information. Since we're
 constantly re-running the tests, I can accept the overhead for calculating the
 similarities. Here are the results using my parameters for all the methods:
 
-    method              RMSE
-    --------------------------
-    item baseline       0.9738
-    rater baseline      0.9536
-    mixed baseline      0.9967
-    item similarity     0.9794
-    rater similarity    0.9622
-    custom              0.9719
+    method              RMSE(MovieLens)     Test 1      Test 2      Test 3
+    -------------------------------------------------------------------------
+    item baseline       0.9738              1.0154      1.0856      1.3497
+    rater baseline      0.9536              1.0659      1.1029      1.3508
+    mixed baseline      0.9967              1.0552      1.0604      1.3892
+    item similarity     0.9794              1.0154      1.0856      1.3588
+    rater similarity    0.9622              1.0186      1.0656      1.3594
+    custom              0.9719              1.0292      1.0622      1.3690
+
+Test 1 was 1000 results made with `RecoTestData` and Test 2 was 1000 results
+made with `MixedBaselineTestData` with an expected mixed baseline RMSE of 1.0.
+Test 3 was the biggest test - 500 raters of 15 different classes rating 1000
+movies, a noise of 1 and 50000 different ratings with an estimated mixed
+baseline RMSE of 1.5045.
 
 According to these results, I have to disagree with the results of the other
 research team and conclude that user-based collaborative filtering works better
-in this situation. Both my custom weighted average of similarities and the
-mixed baseline performed worse than the rater-based similarity and rater
-baseline, respectively. It looks like, at least for this data set, that the
-similarity of users is a better indicator of the rating; similar items are not
-as good (in this case, worse).
-
-Obviously my conclusion is not very solidly backed; this is the
-cross-validation results for folds 1-9 but may be different by using a
-different learnset. If we had a supercomputer to calculate these ratings
-quickly, we could try some brute-force multidimensional parameter analysis to
-find much better parameters for the similarity rankings and increase our
-confidence in the result.
+on the actual MovieLens data. (The noise introduced by the script-generated data
+throws that off slightly for all methods, including the baselines. They don't
+seem to be very reliable.) Both my custom weighted average of similarities and
+the mixed baseline performed worse than the rater-based similarity and rater
+baseline, respectively, on the real data. It looks like, at least for this data
+set, that the similarity of users is a better indicator of the rating; similar
+items are not as good in general.
